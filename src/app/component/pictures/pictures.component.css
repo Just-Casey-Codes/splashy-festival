@@ -1,0 +1,214 @@
+:host { display: block; min-height: 100vh; }
+
+.pictures-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1a0a2e, #3d1a6e, #1a2a3a);
+  padding: 30px 20px 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.page-header {
+  width: 100%;
+  max-width: 600px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.back-btn {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: rgba(255,255,255,0.75);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.85rem;
+  padding: 7px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+.back-btn:hover { background: rgba(255,255,255,0.18); }
+
+.page-header h1 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.8rem;
+  font-weight: 800;
+  background: linear-gradient(90deg, #ff85c1, #ffd166);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin: 0;
+}
+
+/* Upload area */
+.upload-section {
+  width: 100%;
+  max-width: 600px;
+  margin-bottom: 36px;
+}
+
+.upload-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 2px dashed rgba(255,133,193,0.5);
+  border-radius: 20px;
+  padding: 40px 20px;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  background: rgba(255,255,255,0.04);
+}
+
+.upload-label:hover {
+  border-color: #ff85c1;
+  background: rgba(255,133,193,0.08);
+}
+
+.upload-icon { font-size: 2.5rem; }
+
+.upload-text {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  color: #fff;
+}
+
+.upload-sub {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.8rem;
+  color: rgba(255,255,255,0.45);
+}
+
+.preview-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.preview-img {
+  width: 100%;
+  max-width: 340px;
+  border-radius: 16px;
+  border: 3px solid #ff85c1;
+  box-shadow: 0 8px 32px rgba(255,133,193,0.4);
+  object-fit: cover;
+  max-height: 300px;
+}
+
+.preview-actions {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+  max-width: 340px;
+}
+
+.upload-btn {
+  flex: 1;
+  background: linear-gradient(135deg, #ff85c1, #ffd166);
+  color: #fff;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  border: none;
+  border-radius: 50px;
+  padding: 14px;
+  cursor: pointer;
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 20px rgba(255,133,193,0.4);
+  transition: transform 0.15s;
+}
+.upload-btn:hover:not(:disabled) { transform: scale(1.02); }
+.upload-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.cancel-btn {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.18);
+  color: rgba(255,255,255,0.7);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.9rem;
+  padding: 14px 20px;
+  border-radius: 50px;
+  cursor: pointer;
+}
+.cancel-btn:disabled { opacity: 0.5; }
+
+.spinner {
+  display: inline-block;
+  width: 22px;
+  height: 22px;
+  border: 3px solid rgba(255,255,255,0.35);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Gallery */
+.gallery-section { width: 100%; max-width: 600px; }
+
+.gallery-section h2 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 16px;
+}
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 16px;
+}
+
+.polaroid {
+  background: #fff;
+  border-radius: 4px;
+  padding: 8px 8px 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+  transform: rotate(-1.5deg);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.polaroid:nth-child(even) { transform: rotate(1.5deg); }
+.polaroid:hover { transform: rotate(0) scale(1.04); box-shadow: 0 16px 40px rgba(0,0,0,0.6); }
+
+.polaroid img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  display: block;
+}
+
+.polaroid-footer {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.75rem;
+  color: #333;
+  font-weight: 600;
+}
+
+.poster-avatar {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #ddd;
+}
+
+.empty-msg {
+  font-family: 'Outfit', sans-serif;
+  color: rgba(255,255,255,0.4);
+  text-align: center;
+  font-size: 0.95rem;
+}

@@ -1,0 +1,46 @@
+<div class="drinks-page">
+  <div class="page-header">
+    <button class="back-btn" (click)="goHome()">← Back</button>
+    <h1>🍹 Drinks</h1>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-card">
+      <span class="stat-number">{{ totalDrinks }}</span>
+      <span class="stat-label">Total Group Drinks</span>
+    </div>
+    <div class="stat-card mine">
+      <span class="stat-number">{{ myDrinkCount }}</span>
+      <span class="stat-label">My Drinks</span>
+    </div>
+  </div>
+
+  <button class="add-drink-btn" (click)="addDrink()" [disabled]="isAdding">
+    <span *ngIf="!isAdding">🍺 I had a drink!</span>
+    <span *ngIf="isAdding" class="spinner"></span>
+  </button>
+
+  <div class="leaderboard">
+    <h2>🏆 Leaderboard</h2>
+    <div class="lb-list">
+      <div
+        class="lb-row"
+        *ngFor="let entry of leaderboard; let i = index"
+        [class.top-three]="i < 3"
+      >
+        <span class="lb-medal">{{ medal(i) }}</span>
+        <img
+          class="lb-avatar"
+          [src]="entry.avatarUrl || 'https://api.dicebear.com/8.x/thumbs/svg?seed=' + entry.profileName"
+          [alt]="entry.profileName"
+        />
+        <span class="lb-name">
+          {{ entry.profileName }}
+          <span class="lb-status" *ngIf="entry.status">{{ entry.status }}</span>
+        </span>
+        <span class="lb-count">{{ entry.drinkCount }}</span>
+      </div>
+    </div>
+    <p class="empty-lb" *ngIf="leaderboard.length === 0">No data yet – be the first! 🍻</p>
+  </div>
+</div>

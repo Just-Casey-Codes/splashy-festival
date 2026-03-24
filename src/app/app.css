@@ -1,0 +1,39 @@
+body {
+  font-family: 'Comic Sans MS', 'Comic Neue', cursive;
+  background: #ffeef8; 
+  margin: 0;
+  padding: 0;
+  color: #333;
+}
+
+h1, h2 {
+  color: #ff85c1; 
+  text-align: center;
+}
+
+
+button {
+  background: linear-gradient(135deg, #ffb6c1, #87cefa); 
+  color: white;
+  font-weight: bold;
+  font-size: 1.1rem;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+}
+
+.login-container, .profile-grid-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}

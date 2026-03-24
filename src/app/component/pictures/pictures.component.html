@@ -1,0 +1,51 @@
+<div class="pictures-page">
+  <div class="page-header">
+    <button class="back-btn" (click)="goHome()">← Back</button>
+    <h1>📸 Pictures</h1>
+  </div>
+
+  <div class="upload-section">
+    <label class="upload-label" for="photoInput" *ngIf="!previewUrl">
+      <span class="upload-icon">📷</span>
+      <span class="upload-text">Take or Upload a Photo</span>
+      <span class="upload-sub">Tap here to open camera or pick from gallery</span>
+    </label>
+    <input
+      id="photoInput"
+      type="file"
+      accept="image/*"
+      capture="environment"
+      (change)="onFileSelected($event)"
+      style="display:none"
+    />
+
+    <div class="preview-wrap" *ngIf="previewUrl">
+      <img [src]="previewUrl" alt="Preview" class="preview-img" />
+      <div class="preview-actions">
+        <button class="upload-btn" (click)="uploadPhoto()" [disabled]="isUploading">
+          <span *ngIf="!isUploading">Upload 🚀</span>
+          <span *ngIf="isUploading" class="spinner"></span>
+        </button>
+        <button class="cancel-btn" (click)="cancelPreview()" [disabled]="isUploading">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="gallery-section">
+    <h2 *ngIf="photos.length > 0">Festival Memories 🌟</h2>
+    <div class="gallery-grid">
+      <div class="polaroid" *ngFor="let photo of photos">
+        <img [src]="photo.imageUrl" [alt]="photo.profileName" />
+        <div class="polaroid-footer">
+          <img
+            class="poster-avatar"
+            [src]="photo.avatarUrl || 'https://api.dicebear.com/8.x/thumbs/svg?seed=' + photo.profileName"
+            [alt]="photo.profileName"
+          />
+          <span>{{ photo.profileName }}</span>
+        </div>
+      </div>
+    </div>
+    <p class="empty-msg" *ngIf="photos.length === 0 && !isUploading">No photos yet – be the first! 🎉</p>
+  </div>
+</div>

@@ -1,0 +1,73 @@
+<div class="home-page" *ngIf="!isLoading">
+
+  <button class="logout-btn" (click)="logout()">Sign out</button>
+
+  <div class="profile-section" *ngIf="userProfile">
+    <div class="avatar-ring">
+      <img
+        [src]="userProfile.avatarUrl || 'https://api.dicebear.com/8.x/thumbs/svg?seed=' + userProfile.profileName"
+        [alt]="userProfile.profileName"
+        class="avatar"
+      />
+    </div>
+    <h1 class="greeting">Hey, {{ userProfile.profileName }}! 🎶</h1>
+    <p class="subtext">Welcome to the festival</p>
+
+    <div class="current-status" *ngIf="userProfile.status">
+      <span class="status-badge">{{ userProfile.status }}</span>
+    </div>
+    <div class="current-status" *ngIf="!userProfile.status">
+      <span class="status-badge muted">Set your status below ↓</span>
+    </div>
+
+    <div class="status-picker">
+      <button
+        *ngFor="let opt of statusOptions"
+        class="status-btn"
+        [class.active]="userProfile.status === opt.emoji + ' ' + opt.label"
+        (click)="setStatus(opt)"
+        [disabled]="isUpdatingStatus"
+      >
+        <span class="s-emoji">{{ opt.emoji }}</span>
+        <span class="s-label">{{ opt.label }}</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="drinks-counter-pill">
+    <span class="drinks-icon">🍺</span>
+    <span class="drinks-label">Total drinks had</span>
+    <span class="drinks-number">{{ totalDrinks }}</span>
+  </div>
+
+  <div class="nav-cards">
+    <button class="nav-card drinks-card" (click)="goTo('drinks')">
+      <span class="card-icon">🍹</span>
+      <span class="card-title">Drinks</span>
+      <span class="card-sub">Track &amp; leaderboard</span>
+    </button>
+
+    <button class="nav-card pictures-card" (click)="goTo('pictures')">
+      <span class="card-icon">📸</span>
+      <span class="card-title">Pictures</span>
+      <span class="card-sub">Upload memories</span>
+    </button>
+
+    <button class="nav-card objective-card" (click)="goTo('objective')">
+      <span class="card-icon">🎯</span>
+      <span class="card-title">Objective</span>
+      <span class="card-sub">Today's challenge</span>
+    </button>
+
+    <button class="nav-card checklist-card" (click)="goTo('checklist')">
+      <span class="card-icon">🎒</span>
+      <span class="card-title">Packing List</span>
+      <span class="card-sub">Festival essentials</span>
+    </button>
+  </div>
+
+</div>
+
+<div class="loading-wrap" *ngIf="isLoading">
+  <div class="loader"></div>
+</div>

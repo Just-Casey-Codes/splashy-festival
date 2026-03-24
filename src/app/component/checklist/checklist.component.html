@@ -1,0 +1,42 @@
+<div class="checklist-page">
+  <div class="page-header">
+    <button class="back-btn" (click)="goHome()">← Back</button>
+    <div class="title-wrap">
+      <h1>🎪 Packing List</h1>
+    </div>
+  </div>
+
+  <div class="loading-wrap" *ngIf="isLoading">
+    <div class="loader"></div>
+  </div>
+
+  <div class="content" *ngIf="!isLoading">
+    <div class="progress-card">
+      <div class="progress-text">
+        <span>{{ checkedCount }} / {{ totalItems }} packed</span>
+        <span class="pct">{{ progressPct }}%</span>
+      </div>
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill" [style.width.%]="progressPct"></div>
+      </div>
+      <p class="ready-msg" *ngIf="progressPct === 100">You're all packed! 🎉 See you at the festival!</p>
+    </div>
+
+    <div class="category" *ngFor="let cat of categories; let ci = index">
+      <h2 class="cat-title">{{ cat.title }}</h2>
+      <div class="item-list">
+        <button
+          class="item-row"
+          *ngFor="let item of cat.items; let ii = index"
+          [class.done]="isChecked(ci, ii)"
+          (click)="toggle(ci, ii)"
+        >
+          <span class="checkbox">
+            <span *ngIf="isChecked(ci, ii)" class="tick">✓</span>
+          </span>
+          <span class="item-label">{{ item.label }}</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,209 @@
+:host { display: block; min-height: 100vh; }
+
+.drinks-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0f0c29, #1a1a4e, #0d2137);
+  padding: 30px 20px 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.page-header {
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.back-btn {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: rgba(255,255,255,0.75);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.85rem;
+  padding: 7px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+.back-btn:hover { background: rgba(255,255,255,0.18); }
+
+.page-header h1 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #fff;
+  margin: 0;
+  background: linear-gradient(90deg, #66d9e8, #c77dff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.stats-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 28px;
+  width: 100%;
+  max-width: 480px;
+}
+
+.stat-card {
+  flex: 1;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.13);
+  border-radius: 20px;
+  padding: 20px;
+  text-align: center;
+  backdrop-filter: blur(10px);
+}
+
+.stat-card.mine { border-color: #66d9e8; box-shadow: 0 0 20px rgba(102,217,232,0.2); }
+
+.stat-number {
+  display: block;
+  font-family: 'Outfit', sans-serif;
+  font-size: 2.8rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #66d9e8, #c77dff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+
+.stat-label {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.add-drink-btn {
+  background: linear-gradient(135deg, #66d9e8, #c77dff);
+  color: #fff;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 800;
+  font-size: 1.2rem;
+  border: none;
+  border-radius: 50px;
+  padding: 18px 48px;
+  cursor: pointer;
+  width: 100%;
+  max-width: 480px;
+  min-height: 60px;
+  margin-bottom: 40px;
+  box-shadow: 0 8px 32px rgba(102,217,232,0.4);
+  transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.add-drink-btn:hover:not(:disabled) {
+  transform: scale(1.04);
+  box-shadow: 0 12px 40px rgba(102,217,232,0.6);
+}
+
+.add-drink-btn:active:not(:disabled) { transform: scale(0.98); }
+.add-drink-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.spinner {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  border: 3px solid rgba(255,255,255,0.4);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.leaderboard {
+  width: 100%;
+  max-width: 480px;
+}
+
+.leaderboard h2 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 16px;
+}
+
+.lb-list { display: flex; flex-direction: column; gap: 10px; }
+
+.lb-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 14px;
+  padding: 12px 16px;
+  transition: background 0.2s;
+}
+
+.lb-row.top-three {
+  background: rgba(199,125,255,0.12);
+  border-color: rgba(199,125,255,0.3);
+}
+
+.lb-medal {
+  font-size: 1.3rem;
+  width: 28px;
+  text-align: center;
+  flex-shrink: 0;
+  font-family: 'Outfit', sans-serif;
+  color: rgba(255,255,255,0.5);
+}
+
+.lb-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(199,125,255,0.5);
+  flex-shrink: 0;
+}
+
+.lb-name {
+  flex: 1;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+  color: #fff;
+  font-size: 0.95rem;
+}
+
+.lb-count {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 800;
+  font-size: 1.2rem;
+  background: linear-gradient(135deg, #66d9e8, #c77dff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.lb-status {
+  display: block;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.5);
+  margin-top: 2px;
+  letter-spacing: 0.3px;
+}
+
+.empty-lb {
+  font-family: 'Outfit', sans-serif;
+  color: rgba(255,255,255,0.45);
+  text-align: center;
+  font-size: 0.95rem;
+}

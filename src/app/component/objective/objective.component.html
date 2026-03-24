@@ -1,0 +1,25 @@
+<div class="objective-page">
+  <div class="page-header">
+    <button class="back-btn" (click)="goHome()">← Back</button>
+    <h1>🎯 Objective</h1>
+  </div>
+
+  <div class="loading-wrap" *ngIf="isLoading">
+    <div class="loader"></div>
+  </div>
+
+  <div class="content" *ngIf="!isLoading">
+    <p class="date-label">{{ todayDate }}</p>
+    <p class="refreshes">Refreshes at midnight 🌙</p>
+
+    <div class="task-card">
+      <div class="task-icon">🎪</div>
+      <p class="task-text">{{ todayObjective }}</p>
+    </div>
+
+    <div class="tips">
+      <p>✦ Complete your challenge and make the festival memorable!</p>
+      <p>✦ Check back tomorrow for a new task.</p>
+    </div>
+  </div>
+</div>
