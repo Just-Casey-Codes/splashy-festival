@@ -206,6 +206,7 @@
 .pictures-card:hover  { border-color: #ff85c1; box-shadow: 0 8px 32px rgba(255,133,193,0.3); }
 .objective-card:hover { border-color: #ffd166; box-shadow: 0 8px 32px rgba(255,209,102,0.3); }
 .checklist-card:hover { border-color: #a8ff78; box-shadow: 0 8px 32px rgba(168,255,120,0.3); }
+.hanging-card:hover   { border-color: #a78bfa; box-shadow: 0 8px 32px rgba(167,139,250,0.3); }
 
 .card-icon { font-size: 2rem; flex-shrink: 0; }
 

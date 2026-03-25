@@ -6,6 +6,7 @@ import { DrinkingComponent } from './component/drinking/drinking.component';
 import { PicturesComponent } from './component/pictures/pictures.component';
 import { ObjectiveComponent } from './component/objective/objective.component';
 import { ChecklistComponent } from './component/checklist/checklist.component';
+import { HangingWithComponent } from './component/hanging-with/hanging-with.component';
 import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
@@ -16,5 +17,7 @@ export const routes: Routes = [
   { path: 'pictures', component: PicturesComponent, canActivate: [authGuard] },
   { path: 'objective', component: ObjectiveComponent, canActivate: [authGuard] },
   { path: 'checklist', component: ChecklistComponent, canActivate: [authGuard] },
+  { path: 'hanging-with', component: HangingWithComponent, canActivate: [authGuard] },
   { path: '**', redirectTo: '' },
 ];
+

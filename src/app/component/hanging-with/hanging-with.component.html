@@ -1,0 +1,45 @@
+<div class="hw-page">
+  <div class="page-header">
+    <button class="back-btn" (click)="goHome()">← Back</button>
+    <h1>🐾 Hanging With</h1>
+  </div>
+
+  <div class="loading-wrap" *ngIf="isLoading">
+    <div class="loader"></div>
+  </div>
+
+  <div class="content" *ngIf="!isLoading">
+
+    <div class="section-card">
+      <h2 class="section-title">Who are you with right now?</h2>
+      <p class="section-sub">Tap to add or remove</p>
+      <div class="profile-grid">
+        <button
+          class="profile-chip"
+          *ngFor="let p of eligibleProfiles"
+          [class.selected]="isHangingWith(p.uid)"
+          (click)="toggleHangingWith(p.uid)"
+          [disabled]="isSaving"
+        >
+          <img [src]="avatarUrl(p)" [alt]="p.profileName" class="chip-avatar" />
+          <span class="chip-name">{{ p.profileName }}</span>
+          <span class="chip-check" *ngIf="isHangingWith(p.uid)">✓</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="section-title clusters-title">👀 Who's together</div>
+    <div *ngFor="let cluster of clusters" class="cluster-card" [class.solo]="cluster.length === 1">
+      <div class="cluster-avatars">
+        <div class="avatar-wrap" *ngFor="let member of cluster; let i = index" [style.z-index]="cluster.length - i">
+          <img [src]="avatarUrl(member)" [alt]="member.profileName" class="cluster-avatar" />
+        </div>
+      </div>
+      <div class="cluster-names">
+        <span *ngFor="let m of cluster; let last = last">{{ m.profileName }}<span *ngIf="!last"> & </span></span>
+      </div>
+    </div>
+
+    <p class="empty-msg" *ngIf="clusters.length === 0">No one has set their status yet 👀</p>
+  </div>
+</div>
