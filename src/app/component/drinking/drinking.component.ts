@@ -1,6 +1,5 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
-import { Auth } from '@angular/fire/auth';
-import { Firestore, doc, getDoc } from '@angular/fire/firestore';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef, inject } from '@angular/core';
+import { auth } from '../../../firebase';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { DrinksService, UserDrinkEntry } from '../../services/drinks.service';
@@ -14,10 +13,9 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./drinking.component.css'],
 })
 export class DrinkingComponent implements OnInit, OnDestroy {
-  private auth = inject(Auth);
-  private firestore = inject(Firestore);
   private router = inject(Router);
   private drinksService = inject(DrinksService);
+  private cdr = inject(ChangeDetectorRef);
 
   totalDrinks = 0;
   leaderboard: UserDrinkEntry[] = [];
@@ -27,19 +25,25 @@ export class DrinkingComponent implements OnInit, OnDestroy {
 
   private subs: Subscription[] = [];
 
-  async ngOnInit(): Promise<void> {
-    const user = this.auth.currentUser;
-    if (!user) { this.router.navigate(['/']); return; }
-    this.uid = user.uid;
+  ngOnInit(): void {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      unsubscribe();
+      if (!user) { this.router.navigate(['/']); return; }
+      this.uid = user.uid;
 
-    this.subs.push(
-      this.drinksService.getLeaderboard().subscribe((lb) => {
-        this.leaderboard = lb;
-        this.totalDrinks = lb.reduce((s, u) => s + (u.drinkCount || 0), 0);
-        const me = lb.find((u) => u['uid'] === this.uid);
-        this.myDrinkCount = me?.drinkCount ?? 0;
-      })
-    );
+      this.subs.push(
+        this.drinksService.getLeaderboard().subscribe({
+          next: (lb) => {
+            this.leaderboard = lb;
+            this.totalDrinks = lb.reduce((s, u) => s + (u.drinkCount || 0), 0);
+            const me = lb.find((u) => u['uid'] === this.uid);
+            this.myDrinkCount = me?.drinkCount ?? 0;
+            this.cdr.detectChanges();
+          },
+          error: (err) => { console.error('[Drinks] Leaderboard error:', err); }
+        })
+      );
+    });
   }
 
   ngOnDestroy(): void {
@@ -53,6 +57,7 @@ export class DrinkingComponent implements OnInit, OnDestroy {
       await this.drinksService.addDrink(this.uid);
     } finally {
       this.isAdding = false;
+      this.cdr.detectChanges();
     }
   }
 

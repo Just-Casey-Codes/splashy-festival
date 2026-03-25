@@ -1,5 +1,6 @@
-import { Injectable, inject } from '@angular/core';
-import { Firestore, collection, getDocs } from '@angular/fire/firestore';
+import { Injectable } from '@angular/core';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '../../../src/firebase';
 
 const FALLBACK_OBJECTIVES = [
   'Find someone wearing the same colour as you and take a selfie together 📸',
@@ -18,10 +19,10 @@ const FALLBACK_OBJECTIVES = [
 
 @Injectable({ providedIn: 'root' })
 export class ObjectiveService {
-  private firestore = inject(Firestore);
+  private db = db;
 
   async getTodayObjective(): Promise<string> {
-    const objectivesRef = collection(this.firestore, 'objectives');
+    const objectivesRef = collection(this.db, 'objectives');
     const snap = await getDocs(objectivesRef);
 
     let objectives: string[] = [];

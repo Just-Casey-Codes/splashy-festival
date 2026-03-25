@@ -1,6 +1,6 @@
-import { Component, OnInit, inject } from '@angular/core';
-import { Auth } from '@angular/fire/auth';
-import { Firestore, doc, getDoc, updateDoc } from '@angular/fire/firestore';
+import { Component, OnInit, ChangeDetectorRef, inject } from '@angular/core';
+import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { auth, db } from '../../../firebase';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
@@ -96,9 +96,8 @@ export const CHECKLIST: CheckCategory[] = [
   styleUrls: ['./checklist.component.css'],
 })
 export class ChecklistComponent implements OnInit {
-  private auth = inject(Auth);
-  private firestore = inject(Firestore);
   private router = inject(Router);
+  private cdr = inject(ChangeDetectorRef);
 
   categories = CHECKLIST;
   checked: Record<string, boolean> = {};
@@ -117,17 +116,25 @@ export class ChecklistComponent implements OnInit {
     return this.totalItems ? Math.round((this.checkedCount / this.totalItems) * 100) : 0;
   }
 
-  async ngOnInit(): Promise<void> {
-    const user = this.auth.currentUser;
-    if (!user) { this.router.navigate(['/']); return; }
-    this.uid = user.uid;
-
-    const userRef = doc(this.firestore, `users/${user.uid}`);
-    const snap = await getDoc(userRef);
-    if (snap.exists()) {
-      this.checked = (snap.data()['checklist'] as Record<string, boolean>) ?? {};
-    }
-    this.isLoading = false;
+  ngOnInit(): void {
+    const unsubscribe = auth.onAuthStateChanged(async (user) => {
+      unsubscribe();
+      try {
+        if (!user) { this.router.navigate(['/']); return; }
+        this.uid = user.uid;
+        const userRef = doc(db, 'users', user.uid);
+        const snap = await getDoc(userRef);
+        if (snap.exists()) {
+          this.checked = (snap.data()['checklist'] as Record<string, boolean>) ?? {};
+        }
+        this.isLoading = false;
+        this.cdr.detectChanges();
+      } catch (err) {
+        console.error('[Checklist] Error:', err);
+        this.isLoading = false;
+        this.cdr.detectChanges();
+      }
+    });
   }
 
   itemKey(catIndex: number, itemIndex: number): string {
@@ -141,7 +148,8 @@ export class ChecklistComponent implements OnInit {
   async toggle(catIndex: number, itemIndex: number): Promise<void> {
     const key = this.itemKey(catIndex, itemIndex);
     this.checked[key] = !this.checked[key];
-    const userRef = doc(this.firestore, `users/${this.uid}`);
+    this.cdr.detectChanges();
+    const userRef = doc(db, 'users', this.uid);
     await updateDoc(userRef, { checklist: { ...this.checked } });
   }
 

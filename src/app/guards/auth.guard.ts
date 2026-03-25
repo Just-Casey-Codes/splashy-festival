@@ -1,19 +1,19 @@
-import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
-import { Auth } from '@angular/fire/auth';
-import { authState } from '@angular/fire/auth';
-import { map, take } from 'rxjs/operators';
+import { auth } from '../../firebase';
+import { Observable } from 'rxjs';
 
-export const authGuard: CanActivateFn = () => {
-  const auth = inject(Auth);
-  const router = inject(Router);
+export const authGuard: CanActivateFn = (): Observable<boolean> | Promise<boolean> | boolean => {
+  const router = new Router();
 
-  return authState(auth).pipe(
-    take(1),
-    map((user) => {
-      if (user) return true;
-      router.navigate(['/']);
-      return false;
-    })
-  );
+  return new Promise<boolean>((resolve) => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      unsubscribe();
+      if (user) {
+        resolve(true);
+      } else {
+        router.navigate(['/']);
+        resolve(false);
+      }
+    });
+  });
 };

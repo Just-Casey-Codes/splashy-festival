@@ -1,18 +1,28 @@
-import { Injectable, inject } from '@angular/core';
-import { Auth, signInWithPopup, GoogleAuthProvider, signOut, user } from '@angular/fire/auth';
+import { Injectable, NgZone } from '@angular/core';
+import { auth } from '../../firebase';
+import { GoogleAuthProvider, signInWithPopup, signOut, User } from 'firebase/auth';
 import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private auth = inject(Auth);
-  public user$: Observable<any> = user(this.auth);
+  public user$: Observable<User | null>;
 
-  loginWithGoogle() {
-    const provider = new GoogleAuthProvider();
-    return signInWithPopup(this.auth, provider);
+  constructor(private ngZone: NgZone) {
+    this.user$ = new Observable((subscriber) => {
+      const unsubscribe = auth.onAuthStateChanged((user) => {
+        this.ngZone.run(() => subscriber.next(user));
+      });
+      return { unsubscribe };
+    });
   }
 
-  logout() {
-    return signOut(this.auth);
+  loginWithGoogle(): Promise<void> {
+    const provider = new GoogleAuthProvider();
+    return signInWithPopup(auth, provider).then(() => {
+    });
+  }
+
+  logout(): Promise<void> {
+    return signOut(auth);
   }
 }

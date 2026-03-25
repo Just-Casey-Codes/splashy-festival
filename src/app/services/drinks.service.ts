@@ -1,15 +1,14 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable } from '@angular/core';
+import { db } from '../../firebase';
 import {
-  Firestore,
   collection,
-  collectionData,
   doc,
+  onSnapshot,
   updateDoc,
   increment,
-  query,
-  orderBy,
-} from '@angular/fire/firestore';
-import { Observable, map } from 'rxjs';
+} from 'firebase/firestore';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 export interface UserDrinkEntry {
   uid?: string;
@@ -21,12 +20,25 @@ export interface UserDrinkEntry {
 
 @Injectable({ providedIn: 'root' })
 export class DrinksService {
-  private firestore = inject(Firestore);
 
   getLeaderboard(): Observable<UserDrinkEntry[]> {
-    const usersRef = collection(this.firestore, 'users');
-    const q = query(usersRef, orderBy('drinkCount', 'desc'));
-    return collectionData(q, { idField: 'uid' }) as Observable<UserDrinkEntry[]>;
+    return new Observable((subscriber) => {
+      const usersRef = collection(db, 'users');
+      const unsubscribe = onSnapshot(
+        usersRef,
+        (snap) => {
+          const users = snap.docs
+            .map((d) => ({
+              uid: d.id,
+              ...(d.data() as Omit<UserDrinkEntry, 'uid'>),
+            }))
+            .sort((a, b) => (b.drinkCount || 0) - (a.drinkCount || 0));
+          subscriber.next(users);
+        },
+        (err) => subscriber.error(err)
+      );
+      return { unsubscribe };
+    });
   }
 
   getTotalDrinks(): Observable<number> {
@@ -36,7 +48,7 @@ export class DrinksService {
   }
 
   async addDrink(uid: string): Promise<void> {
-    const userRef = doc(this.firestore, `users/${uid}`);
+    const userRef = doc(db, 'users', uid);
     await updateDoc(userRef, { drinkCount: increment(1) });
   }
 }

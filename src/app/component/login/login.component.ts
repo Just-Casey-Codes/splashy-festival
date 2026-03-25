@@ -17,10 +17,15 @@ export class LoginComponent implements OnInit {
   constructor(private authService: AuthService) {}
 
   ngOnInit(): void {
-    this.authService.user$.subscribe((user) => {
-      if (user) {
-        this.router.navigate(['/select-profile']);
-      }
+    this.authService.user$.subscribe({
+      next: (user) => {
+        if (user) {
+          this.router.navigate(['/home']);
+        }
+      },
+      error: (err) => {
+        console.error('Auth subscription error:', err);
+      },
     });
   }
 
@@ -31,7 +36,11 @@ export class LoginComponent implements OnInit {
       this.router.navigate(['/select-profile']);
     } catch (err) {
       console.error('Login failed:', err);
-      alert('Login failed. Try again.');
+      if (err instanceof Error) {
+        alert('Login failed: ' + err.message);
+      } else {
+        alert('Login failed: ' + JSON.stringify(err));
+      }
     } finally {
       this.isLoading = false;
     }

@@ -1,6 +1,6 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
-import { Auth } from '@angular/fire/auth';
-import { Firestore, doc, getDoc } from '@angular/fire/firestore';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef, inject } from '@angular/core';
+import { doc, getDoc } from 'firebase/firestore';
+import { auth, db } from '../../../firebase';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { PhotosService, PhotoEntry } from '../../services/photos.service';
@@ -14,10 +14,9 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./pictures.component.css'],
 })
 export class PicturesComponent implements OnInit, OnDestroy {
-  private auth = inject(Auth);
-  private firestore = inject(Firestore);
   private router = inject(Router);
   private photosService = inject(PhotosService);
+  private cdr = inject(ChangeDetectorRef);
 
   photos: PhotoEntry[] = [];
   isUploading = false;
@@ -30,21 +29,35 @@ export class PicturesComponent implements OnInit, OnDestroy {
 
   private sub?: Subscription;
 
-  async ngOnInit(): Promise<void> {
-    const user = this.auth.currentUser;
-    if (!user) { this.router.navigate(['/']); return; }
-    this.uid = user.uid;
+  ngOnInit(): void {
+    const unsubscribe = auth.onAuthStateChanged(async (user) => {
+      unsubscribe();
+      try {
+        if (!user) { this.router.navigate(['/']); return; }
+        this.uid = user.uid;
 
-    const userRef = doc(this.firestore, `users/${user.uid}`);
-    const snap = await getDoc(userRef);
-    if (snap.exists()) {
-      const data = snap.data() as any;
-      this.profileName = data.profileName;
-      this.avatarUrl = data.avatarUrl;
-    }
+        const userRef = doc(db, 'users', user.uid);
+        const snap = await getDoc(userRef);
+        if (snap.exists()) {
+          const data = snap.data() as any;
+          this.profileName = data.profileName;
+          this.avatarUrl = data.avatarUrl;
+        }
 
-    this.sub = this.photosService.getAllPhotos().subscribe((photos) => {
-      this.photos = photos;
+        this.loadPhotos();
+        this.cdr.detectChanges();
+      } catch (err) {
+        console.error('[Pictures] Error:', err);
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  loadPhotos(): void {
+    this.sub?.unsubscribe();
+    this.sub = this.photosService.getAllPhotos().subscribe({
+      next: (photos) => { this.photos = photos; this.cdr.detectChanges(); },
+      error: (err) => { console.error('[Pictures] photos load error:', err); }
     });
   }
 
@@ -57,7 +70,10 @@ export class PicturesComponent implements OnInit, OnDestroy {
     if (!input.files?.length) return;
     this.selectedFile = input.files[0];
     const reader = new FileReader();
-    reader.onload = (e) => { this.previewUrl = e.target?.result as string; };
+    reader.onload = (e) => {
+      this.previewUrl = e.target?.result as string;
+      this.cdr.detectChanges();
+    };
     reader.readAsDataURL(this.selectedFile);
   }
 
@@ -73,11 +89,13 @@ export class PicturesComponent implements OnInit, OnDestroy {
       );
       this.selectedFile = null;
       this.previewUrl = null;
+      this.loadPhotos();
     } catch (err) {
-      console.error('Upload failed:', err);
-      alert('Upload failed. Please try again.');
+      console.error('[Pictures] Upload failed:', err);
+      alert('Upload failed: ' + (err instanceof Error ? err.message : JSON.stringify(err)));
     } finally {
       this.isUploading = false;
+      this.cdr.detectChanges();
     }
   }
 

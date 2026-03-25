@@ -1,20 +1,14 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable } from '@angular/core';
+import { db, storage } from '../../firebase';
 import {
-  Firestore,
   collection,
   addDoc,
-  collectionData,
-  query,
-  orderBy,
   serverTimestamp,
-} from '@angular/fire/firestore';
-import {
-  Storage,
-  ref,
-  uploadBytesResumable,
-  getDownloadURL,
-} from '@angular/fire/storage';
-import { Observable } from 'rxjs';
+  getDocs,
+} from 'firebase/firestore';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { from, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 export interface PhotoEntry {
   id?: string;
@@ -27,13 +21,42 @@ export interface PhotoEntry {
 
 @Injectable({ providedIn: 'root' })
 export class PhotosService {
-  private firestore = inject(Firestore);
-  private storage = inject(Storage);
 
   getAllPhotos(): Observable<PhotoEntry[]> {
-    const photosRef = collection(this.firestore, 'photos');
-    const q = query(photosRef, orderBy('uploadedAt', 'desc'));
-    return collectionData(q, { idField: 'id' }) as Observable<PhotoEntry[]>;
+    const photosRef = collection(db, 'photos');
+    return from(getDocs(photosRef)).pipe(
+      map((snap) =>
+        snap.docs
+          .map((d) => ({ id: d.id, ...(d.data() as Omit<PhotoEntry, 'id'>) }))
+          .sort((a, b) => {
+            const aTime = a.uploadedAt?.seconds ?? 0;
+            const bTime = b.uploadedAt?.seconds ?? 0;
+            return bTime - aTime;
+          })
+      )
+    );
+  }
+
+  private compressImage(file: File, maxPx = 1024, quality = 0.8): Promise<Blob> {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      const url = URL.createObjectURL(file);
+      img.onload = () => {
+        URL.revokeObjectURL(url);
+        const scale = Math.min(1, maxPx / Math.max(img.width, img.height));
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.round(img.width * scale);
+        canvas.height = Math.round(img.height * scale);
+        canvas.getContext('2d')!.drawImage(img, 0, 0, canvas.width, canvas.height);
+        canvas.toBlob(
+          (blob) => blob ? resolve(blob) : reject(new Error('Compression failed')),
+          'image/jpeg',
+          quality
+        );
+      };
+      img.onerror = reject;
+      img.src = url;
+    });
   }
 
   async uploadPhoto(
@@ -42,22 +65,27 @@ export class PhotosService {
     profileName: string,
     avatarUrl: string
   ): Promise<void> {
-    const timestamp = Date.now();
-    const storageRef = ref(this.storage, `photos/${uid}/${timestamp}_${file.name}`);
-    const uploadTask = uploadBytesResumable(storageRef, file);
+    console.log('[Photos] Step 1: compressing image...');
+    const compressed = await this.compressImage(file);
+    console.log('[Photos] Step 2: compressed to', compressed.size, 'bytes');
 
-    await new Promise<void>((resolve, reject) => {
-      uploadTask.on('state_changed', null, reject, async () => {
-        const imageUrl = await getDownloadURL(uploadTask.snapshot.ref);
-        await addDoc(collection(this.firestore, 'photos'), {
-          uid,
-          profileName,
-          avatarUrl,
-          imageUrl,
-          uploadedAt: serverTimestamp(),
-        });
-        resolve();
-      });
+    const timestamp = Date.now();
+    const storageRef = ref(storage, `photos/${uid}/${timestamp}.jpg`);
+
+    console.log('[Photos] Step 3: uploading to Storage...');
+    const snapshot = await uploadBytes(storageRef, compressed, { contentType: 'image/jpeg' });
+    console.log('[Photos] Step 4: upload done, getting download URL...');
+
+    const imageUrl = await getDownloadURL(snapshot.ref);
+    console.log('[Photos] Step 5: got URL, saving to Firestore...');
+
+    await addDoc(collection(db, 'photos'), {
+      uid,
+      profileName,
+      avatarUrl,
+      imageUrl,
+      uploadedAt: serverTimestamp(),
     });
+    console.log('[Photos] Step 6: saved to Firestore. Done!');
   }
 }
