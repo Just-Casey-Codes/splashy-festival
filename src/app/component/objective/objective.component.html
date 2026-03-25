@@ -16,8 +16,6 @@
       <div class="task-icon">🎪</div>
       <p class="task-text">{{ todayObjective }}</p>
     </div>
-
-    <!-- Already completed today -->
     <div class="completed-badge" *ngIf="hasCompletedToday">
       <span class="check">✅</span>
       <p>You nailed it! Want another challenge?</p>
@@ -27,7 +25,6 @@
       </button>
     </div>
 
-    <!-- Complete flow (not yet completed) -->
     <div class="complete-section" *ngIf="!hasCompletedToday">
       <div *ngIf="!previewUrl">
         <p class="proof-hint">📷 Take a photo as proof to complete!</p>
@@ -62,7 +59,6 @@
       <p>✦ Complete it for a point on the leaderboard.</p>
     </div>
 
-    <!-- Leaderboard -->
     <div class="leaderboard" *ngIf="leaderboard.length > 0">
       <h2>🏆 Objective Champions</h2>
       <div class="lb-list">

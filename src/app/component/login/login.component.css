@@ -66,6 +66,7 @@
   letter-spacing: -1px;
   background: linear-gradient(90deg, #ff85c1, #c77dff, #66d9e8);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
